@@ -1,0 +1,28 @@
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Compiled files
+*.class
+*.o
+*.exe
+*.out
+*.pyc
+__pycache__/
+
+# Logs
+*.log
+
+# Environment
+.env
+.venv
+venv/
+env/
+
