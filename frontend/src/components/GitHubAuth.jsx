@@ -64,9 +64,21 @@ function GitHubAuth({ onAuth }) {
         })
         alert('✅ Connection successful! README.md found. Click "Connect to GitHub" to proceed.')
       } catch (error) {
+        // Handle specific error codes for README access
         if (error.status === 404) {
           alert('⚠️ Repository found, but README.md not found. Please create a README.md file first.')
+          setTesting(false)
+          return
+        } else if (error.status === 401) {
+          alert('❌ Authentication failed when accessing README.md. The token is invalid or expired. Please:\n1. Check if you copied the full token\n2. Verify the token has "repo" scope\n3. Generate a new token if needed')
+          setTesting(false)
+          return
+        } else if (error.status === 403) {
+          alert('❌ Access forbidden when accessing README.md. Please ensure:\n1. Your token has "repo" scope with read/write permissions\n2. The token has access to read repository contents\n3. If it\'s a private repo, verify the token has proper access')
+          setTesting(false)
+          return
         } else {
+          // For other errors (network issues, etc.), rethrow to be caught by outer catch
           throw error
         }
       }
@@ -184,4 +196,3 @@ function GitHubAuth({ onAuth }) {
 }
 
 export default GitHubAuth
-

@@ -1,5 +1,28 @@
 import { Octokit } from '@octokit/rest'
 
+// Browser-compatible base64 encoding/decoding helpers
+// Buffer is NOT available in browsers, so we use these functions instead
+const base64Decode = (base64) => {
+  // Decode base64 to UTF-8 string
+  const binaryString = atob(base64)
+  const bytes = new Uint8Array(binaryString.length)
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i)
+  }
+  return new TextDecoder('utf-8').decode(bytes)
+}
+
+const base64Encode = (text) => {
+  // Encode UTF-8 string to base64
+  const encoder = new TextEncoder()
+  const bytes = encoder.encode(text)
+  let binaryString = ''
+  for (let i = 0; i < bytes.length; i++) {
+    binaryString += String.fromCharCode(bytes[i])
+  }
+  return btoa(binaryString)
+}
+
 class GitHubService {
   constructor(owner, repo, token) {
     this.owner = owner
@@ -20,7 +43,7 @@ class GitHubService {
         throw new Error('README.md is empty or could not be read')
       }
 
-      const content = Buffer.from(data.content, 'base64').toString('utf-8')
+      const content = base64Decode(data.content)
       
       if (!content || content.length === 0) {
         throw new Error('README.md content is empty')
@@ -195,7 +218,7 @@ class GitHubService {
         path: 'README.md'
       })
 
-      let content = Buffer.from(data.content, 'base64').toString('utf-8')
+      let content = base64Decode(data.content)
       const sha = data.sha
 
       // Find the topic section
@@ -221,12 +244,14 @@ class GitHubService {
       // Build question entry
       const questionEntry = this.buildQuestionEntry(questionData, questionNumber, parseInt(questionData.topic))
 
-      // Insert question before the closing ---
+      // Insert question before the closing separator
+      // match[1] is the topic section, match[2] is the separator (--- or ###)
       const topicSection = match[1]
+      const separator = match[2] || '---'
       const updatedSection = topicSection + '\n' + questionEntry + '\n'
 
-      // Update content
-      content = content.replace(topicRegex, updatedSection + '$2')
+      // Update content - use the captured separator, not a literal '$2'
+      content = content.replace(topicRegex, updatedSection + separator)
 
       // Update question count
       const countRegex = new RegExp(`(### ${parseInt(questionData.topic)}\\. ${topicName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?- \\*\\*Questions Solved:\\*\\* )\\d+`, 'm')
@@ -257,7 +282,7 @@ class GitHubService {
         repo: this.repo,
         path: 'README.md',
         message: `Add question: ${questionData.title}`,
-        content: Buffer.from(content).toString('base64'),
+        content: base64Encode(content),
         sha: sha
       })
 
@@ -338,7 +363,23 @@ class GitHubService {
     solutionContent += `## Problem Statement\n`
     solutionContent += `[Paste the problem statement here]\n\n`
     solutionContent += `## Link\n`
-    solutionContent += `${questionData.link || '[LeetCode/Codeforces/etc. link]'}\n\n`
+    // Format link properly - if it's a URL, make it clickable, otherwise use placeholder
+    if (questionData.link && questionData.link.trim()) {
+      const link = questionData.link.trim()
+      // Check if it's already a markdown link or just a URL
+      if (link.startsWith('http://') || link.startsWith('https://')) {
+        // It's a URL, make it a clickable markdown link
+        solutionContent += `[View Problem](${link})\n\n`
+      } else if (link.match(/^\[.+\]\(.+\)$/)) {
+        // It's already a markdown link, use it as is
+        solutionContent += `${link}\n\n`
+      } else {
+        // Plain text, use as is
+        solutionContent += `${link}\n\n`
+      }
+    } else {
+      solutionContent += `[LeetCode/Codeforces/etc. link]\n\n`
+    }
     solutionContent += `## Difficulty\n`
     solutionContent += `${questionData.difficulty || 'Easy'}\n\n`
     solutionContent += `## Approach\n`
@@ -385,7 +426,7 @@ class GitHubService {
         repo: this.repo,
         path: filePath,
         message: `Add solution file for ${questionData.title}`,
-        content: Buffer.from(solutionContent).toString('base64')
+        content: base64Encode(solutionContent)
       })
     } catch (error) {
       console.error('Error creating solution file:', error)
@@ -402,7 +443,7 @@ class GitHubService {
         path: 'README.md'
       })
 
-      let content = Buffer.from(data.content, 'base64').toString('utf-8')
+      let content = base64Decode(data.content)
       const sha = data.sha
 
       // This is a simplified version - in a real implementation,
@@ -462,7 +503,7 @@ class GitHubService {
         repo: this.repo,
         path: 'README.md',
         message: `Add note to question`,
-        content: Buffer.from(content).toString('base64'),
+        content: base64Encode(content),
         sha: sha
       })
 

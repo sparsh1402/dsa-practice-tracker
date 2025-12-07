@@ -4,7 +4,7 @@
 [Paste the problem statement here]
 
 ## Link
-[LeetCode/Codeforces/etc. link]
+[View Problem](https://leetcode.com/problems/two-sum/)
 
 ## Difficulty
 Easy / Medium / Hard
