@@ -19,19 +19,47 @@ function GitHubAuth({ onAuth }) {
     setTesting(true)
     try {
       const { Octokit } = await import('@octokit/rest')
-      const octokit = new Octokit({ auth: token })
+      
+      // Clean token (remove any whitespace)
+      const cleanToken = token.trim()
+      
+      // Validate token format
+      if (!cleanToken.startsWith('ghp_') && !cleanToken.startsWith('github_pat_')) {
+        alert('⚠️ Token format looks incorrect. GitHub tokens usually start with "ghp_" or "github_pat_". Please check your token.')
+        setTesting(false)
+        return
+      }
+      
+      const octokit = new Octokit({ auth: cleanToken })
       
       // Test 1: Check if we can access the repo
-      await octokit.repos.get({
-        owner: owner,
-        repo: repo
-      })
+      try {
+        await octokit.repos.get({
+          owner: owner.trim(),
+          repo: repo.trim()
+        })
+      } catch (repoError) {
+        if (repoError.status === 401) {
+          alert('❌ Authentication failed. The token is invalid or expired. Please:\n1. Check if you copied the full token\n2. Verify the token has "repo" scope\n3. Generate a new token if needed')
+          setTesting(false)
+          return
+        } else if (repoError.status === 404) {
+          alert(`❌ Repository "${owner}/${repo}" not found. Please check:\n1. Repository name is correct\n2. Repository exists and is accessible\n3. Username/organization name is correct`)
+          setTesting(false)
+          return
+        } else if (repoError.status === 403) {
+          alert('❌ Access forbidden. Please ensure:\n1. Your token has "repo" scope selected\n2. The repository is accessible with this token\n3. If it\'s a private repo, the token has access')
+          setTesting(false)
+          return
+        }
+        throw repoError
+      }
       
       // Test 2: Check if README exists
       try {
         await octokit.repos.getContent({
-          owner: owner,
-          repo: repo,
+          owner: owner.trim(),
+          repo: repo.trim(),
           path: 'README.md'
         })
         alert('✅ Connection successful! README.md found. Click "Connect to GitHub" to proceed.')
@@ -44,15 +72,7 @@ function GitHubAuth({ onAuth }) {
       }
     } catch (error) {
       console.error('Connection test failed:', error)
-      if (error.status === 401) {
-        alert('❌ Authentication failed. Please check your token.')
-      } else if (error.status === 404) {
-        alert(`❌ Repository "${owner}/${repo}" not found. Please check the repository name.`)
-      } else if (error.status === 403) {
-        alert('❌ Access forbidden. Please ensure your token has "repo" scope.')
-      } else {
-        alert(`❌ Connection failed: ${error.message}`)
-      }
+      alert(`❌ Connection failed: ${error.message || 'Unknown error'}\n\nCheck the browser console (F12) for more details.`)
     } finally {
       setTesting(false)
     }

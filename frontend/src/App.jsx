@@ -38,22 +38,47 @@ function App() {
   const loadQuestions = async (owner, repo, token) => {
     try {
       setLoading(true)
-      const githubService = getGitHubService(owner, repo, token)
+      
+      // Clean inputs
+      const cleanOwner = owner.trim()
+      const cleanRepo = repo.trim()
+      const cleanToken = token.trim()
+      
+      // Validate token format
+      if (!cleanToken.startsWith('ghp_') && !cleanToken.startsWith('github_pat_')) {
+        throw new Error('Invalid token format. GitHub tokens should start with "ghp_" or "github_pat_"')
+      }
+      
+      const githubService = getGitHubService(cleanOwner, cleanRepo, cleanToken)
       const data = await githubService.parseREADME()
       setQuestions(data.questions || [])
       setTopics(data.topics || [])
     } catch (error) {
       console.error('Error loading questions:', error)
+      console.error('Full error object:', error)
+      
       let errorMessage = 'Error loading questions. '
       
       if (error.status === 401) {
-        errorMessage += 'Invalid GitHub token. Please check your token has the "repo" scope.'
+        errorMessage = 'Invalid GitHub token. Please:\n\n' +
+          '1. Check if you copied the FULL token (it should start with "ghp_")\n' +
+          '2. Verify the token has "repo" scope selected\n' +
+          '3. Make sure the token hasn\'t expired\n' +
+          '4. Try generating a new token at: https://github.com/settings/tokens'
       } else if (error.status === 404) {
-        errorMessage += `Repository "${owner}/${repo}" not found or README.md doesn't exist.`
+        errorMessage = `Repository "${owner}/${repo}" not found. Please check:\n\n` +
+          '1. Repository name is correct (case-sensitive)\n' +
+          '2. Username/organization name is correct\n' +
+          '3. Repository exists and is accessible'
       } else if (error.status === 403) {
-        errorMessage += 'Access forbidden. Please check your token permissions.'
+        errorMessage = 'Access forbidden. Please ensure:\n\n' +
+          '1. Your token has "repo" scope selected\n' +
+          '2. The repository is accessible with this token\n' +
+          '3. If it\'s a private repo, verify token has access'
+      } else if (error.message) {
+        errorMessage += error.message
       } else {
-        errorMessage += `Error: ${error.message || 'Unknown error'}. Please check your GitHub credentials and repository name.`
+        errorMessage += `Unknown error. Check browser console (F12) for details.`
       }
       
       alert(errorMessage)

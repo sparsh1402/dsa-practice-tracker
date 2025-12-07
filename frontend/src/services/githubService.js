@@ -485,4 +485,3 @@ export function getGitHubService(owner, repo, token) {
 }
 
 export default GitHubService
-
