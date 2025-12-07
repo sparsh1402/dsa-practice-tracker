@@ -213,13 +213,51 @@
 
 ---
 
+## 🚀 Frontend Application
+
+This repository includes a **React frontend** that provides a beautiful UI for managing your DSA tracker!
+
+### Features:
+- 📊 View all questions organized by topic
+- ➕ Add new questions directly from the UI
+- 📝 Add notes to questions
+- 🔄 Real-time sync with GitHub README (no backend needed!)
+- 🎨 Modern, responsive design
+
+### Using the Frontend:
+
+1. **Local Development:**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+2. **Connect to GitHub:**
+   - Enter your GitHub username/organization
+   - Enter your repository name
+   - Provide a GitHub Personal Access Token (with `repo` scope)
+   - Get your token at: https://github.com/settings/tokens
+
+3. **Deploy to GitHub Pages:**
+   - The repository includes a GitHub Actions workflow
+   - Push to `main` branch to automatically deploy
+   - Enable GitHub Pages in repository settings (source: GitHub Actions)
+   - Your app will be live at: `https://<username>.github.io/dsa-practice-tracker/`
+
 ## 📝 How to Use This Repository
 
+### Option 1: Using the Frontend (Recommended)
+- Use the React app to add questions and notes visually
+- Everything syncs automatically with your README.md
+
+### Option 2: Manual Method
 1. **Adding a New Question:**
    - Navigate to the appropriate topic folder (e.g., `01-Arrays-Strings/`)
    - Create a new folder with the question name
    - Add your solution file(s) and use the template from `templates/solution_template.md`
    - Update the README.md with the question details
+   - Or use the helper script: `python add_question.py 1 "Question Name"`
 
 2. **Updating Progress:**
    - Update the "Total Questions Solved" counter in this README
