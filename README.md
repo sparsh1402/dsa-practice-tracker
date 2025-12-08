@@ -22,23 +22,12 @@
 - **Questions Solved:** 4
 - **Status:** 🟡 In Progress
 
-
-- [ ] Question 1: Two Summm
-  - **Difficulty:** Easy
-  - **Solution:** [01-Arrays-Strings/Two-Summm/solution.md](01-Arrays-Strings/Two-Summm/solution.md)
-
-
-- [ ] Question 2:  Two Summmmm
-  - **Difficulty:** Easy
-  - **Solution:** [01-Arrays-Strings/-Two-Summmmm/solution.md](01-Arrays-Strings/-Two-Summmmm/solution.md)
-
-
-- [ ] Question 3: Two Sum
+- [ ] Question 1: Two Sum
   - **Difficulty:** Easy
   - **Solution:** [01-Arrays-Strings/Two-Sum/solution.md](01-Arrays-Strings/Two-Sum/solution.md)
 
 
-- [ ] Question 4: Three Sum
+- [ ] Question 2: Three Sum
   - **Difficulty:** Medium
   - **Solution:** [01-Arrays-Strings/Three-Sum/solution.md](01-Arrays-Strings/Three-Sum/solution.md)
 
