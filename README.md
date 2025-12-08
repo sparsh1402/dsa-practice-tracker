@@ -5,7 +5,7 @@
 ## 📊 Progress Tracker
 
 ### Overall Statistics
-- **Total Questions Solved:** 3
+- **Total Questions Solved:** 4
 - **Current Streak:** 0 days
 - **Last Updated:** [Update this date]
 
@@ -19,7 +19,7 @@
 ## 📚 Topics Covered
 
 ### 1. Arrays & Strings
-- **Questions Solved:** 3
+- **Questions Solved:** 4
 - **Status:** 🟡 In Progress
 
 
@@ -36,6 +36,11 @@
 - [ ] Question 3: Two Sum
   - **Difficulty:** Easy
   - **Solution:** [01-Arrays-Strings/Two-Sum/solution.md](01-Arrays-Strings/Two-Sum/solution.md)
+
+
+- [ ] Question 4: Three Sum
+  - **Difficulty:** Medium
+  - **Solution:** [01-Arrays-Strings/Three-Sum/solution.md](01-Arrays-Strings/Three-Sum/solution.md)
 
 #### Questions:
 - [ ] Question 1: Two Sum
